@@ -1,0 +1,120 @@
+.transactions-card {
+  margin-bottom: 1.5rem;
+}
+
+.transactions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.transactions-search {
+  display: flex;
+  align-items: center;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  min-width: 180px;
+}
+
+.search-icon {
+  color: var(--gray-500);
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.search-input {
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  color: var(--gray-900);
+  width: 100%;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: var(--gray-500);
+}
+
+.transactions-table-wrap {
+  overflow-x: auto;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.transactions-table th {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.transactions-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.transactions-table tbody tr:hover {
+  background: var(--gray-50);
+}
+
+.amount-col {
+  text-align: right;
+}
+
+.amount-cell {
+  font-weight: 600;
+  text-align: right;
+}
+
+.amount-income {
+  color: var(--income);
+}
+
+.amount-expense {
+  color: var(--expense);
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.date-cell {
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+
+.desc-cell {
+  font-weight: 500;
+  color: var(--gray-900);
+}
+
+.transactions-empty {
+  text-align: center;
+  color: var(--gray-500);
+  padding: 2rem !important;
+}
+
+@media (max-width: 640px) {
+  .transactions-table th,
+  .transactions-table td {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,56 @@
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.overview-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.overview-card-icon {
+  color: var(--gray-500);
+}
+
+.overview-card--income .overview-card-icon,
+.overview-card--income .overview-card-value {
+  color: var(--income);
+}
+
+.overview-card--expense .overview-card-icon,
+.overview-card--expense .overview-card-value {
+  color: var(--expense);
+}
+
+.overview-card--neutral .overview-card-icon,
+.overview-card--neutral .overview-card-value {
+  color: var(--neutral);
+}
+
+.overview-card-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.overview-card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.overview-card-sparkline {
+  margin-top: 0.25rem;
+  height: 36px;
+  opacity: 0.8;
+}

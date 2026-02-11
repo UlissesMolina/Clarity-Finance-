@@ -1,0 +1,19 @@
+.chart-card {
+  margin-bottom: 1.5rem;
+}
+
+.chart-empty {
+  color: var(--gray-500);
+  text-align: center;
+  padding: 2rem;
+  margin: 0;
+}
+
+.spending-chart {
+  min-height: 280px;
+}
+
+.chart-legend-label {
+  font-size: 0.8rem;
+  color: var(--gray-700);
+}
