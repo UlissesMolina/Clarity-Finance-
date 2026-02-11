@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { GET_SPENDING_BY_CATEGORY } from '../graphql/queries';
 import type { GetSpendingByCategoryQuery } from '../graphql/types';
@@ -25,6 +25,15 @@ export function SpendingChart({
   selectedCategory,
   className,
 }: SpendingChartProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const prevMonth = month === 0 ? 11 : month - 1;
   const prevYear = month === 0 ? year - 1 : year;
   const { data, loading, error } = useQuery<GetSpendingByCategoryQuery>(GET_SPENDING_BY_CATEGORY, {
@@ -68,14 +77,14 @@ export function SpendingChart({
     <div className={clsx('chart-card', 'card', className)}>
       <h3 className="section-title">Spending by Category</h3>
       <div className="spending-chart">
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={isMobile ? 320 : 280}>
           <PieChart>
             <Pie
               data={chartData}
               cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={100}
+              cy={isMobile ? "40%" : "50%"}
+              innerRadius={isMobile ? 50 : 60}
+              outerRadius={isMobile ? 80 : 100}
               paddingAngle={2}
               dataKey="value"
               nameKey="name"
@@ -102,9 +111,10 @@ export function SpendingChart({
               contentStyle={{ borderRadius: 8, border: '1px solid var(--gray-200)' }}
             />
             <Legend
-              layout="vertical"
-              align="right"
-              verticalAlign="middle"
+              layout={isMobile ? "horizontal" : "vertical"}
+              align={isMobile ? "center" : "right"}
+              verticalAlign={isMobile ? "bottom" : "middle"}
+              wrapperStyle={isMobile ? { paddingTop: '1rem' } : undefined}
               formatter={(value, entry: unknown) => {
                 const payload = (entry as { payload?: { percent?: number; value?: number; trend?: number | null } })?.payload;
                 const pct = payload?.percent ?? 0;
@@ -114,7 +124,7 @@ export function SpendingChart({
                   <span className="chart-legend-label">
                     {value} — <span className="chart-legend-amount">{formatCurrency(amt)}</span>{' '}
                     <span className="chart-legend-percent">({pct}%)</span>
-                    {trend != null && (
+                    {trend != null && !isMobile && (
                       <span className={clsx('chart-legend-trend', trend >= 0 ? 'chart-legend-trend--up' : 'chart-legend-trend--down')}>
                         {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}% from last period
                       </span>

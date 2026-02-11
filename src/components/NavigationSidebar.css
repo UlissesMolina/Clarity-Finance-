@@ -6,10 +6,17 @@
   padding: 1rem 0.5rem;
   position: sticky;
   top: 0;
-  height: 100vh;
+  max-height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navigation-sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .navigation-brand {
@@ -144,6 +151,9 @@
   .navigation-sidebar {
     width: 180px;
     padding: 0.75rem 0.375rem;
+    overflow: visible;
+    height: auto;
+    position: static;
   }
 
   .navigation-tab {

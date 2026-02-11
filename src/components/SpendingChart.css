@@ -15,6 +15,42 @@
 
 .spending-chart {
   min-height: 280px;
+  width: 100%;
+  overflow: visible;
+}
+
+.chart-legend-label {
+  font-size: 0.8rem;
+  color: var(--gray-700);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .chart-card.card {
+    padding: 1.25rem;
+  }
+
+  .spending-chart {
+    min-height: 320px;
+  }
+
+  .chart-legend-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .chart-card.card {
+    padding: 1rem;
+  }
+
+  .spending-chart {
+    min-height: 300px;
+  }
+
+  .chart-legend-label {
+    font-size: 0.7rem;
+  }
 }
 
 .chart-legend-label {

@@ -9,6 +9,11 @@ export interface LandingPageProps {
 
 const TECH_STACK = ['React', 'TypeScript', 'Recharts', 'GraphQL', 'Apollo'];
 
+/** Update these to match the filenames in public/assets/ (e.g. after renaming/cropping) */
+const IMG_DASHBOARD = 'financeDashboardSS.png';
+const IMG_ANALYTICS = 'newAnalyticsSS.png';
+const asset = (name: string) => `${process.env.PUBLIC_URL || ''}/assets/${name}`;
+
 /**
  * Professional landing page: glass nav, gradient hero, feature cards, tech pills, dark footer.
  * Self-contained; customize accent in LandingPage.css (--accent), logo and links below.
@@ -143,7 +148,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
           <div className="feature-full-visual">
             <div className="landing-screenshot-wrap landing-screenshot-wrap--dashboard">
               <img
-                src="/assets/fiannceDashbordSS.png"
+                src={asset(IMG_DASHBOARD)}
                 alt="Clarity Finance dashboard showing overview cards, balance chart, and transactions"
                 className="landing-screenshot"
               />
@@ -158,7 +163,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
           <div className="feature-full-visual">
             <div className="landing-screenshot-wrap landing-screenshot-wrap--analytics">
               <img
-                src="/assets/analyticsSS.png"
+                src={asset(IMG_ANALYTICS)}
                 alt="Spending analytics and category breakdown"
                 className="landing-screenshot"
               />
