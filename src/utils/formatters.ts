@@ -4,8 +4,11 @@ import { startOfWeek, endOfWeek } from 'date-fns';
  * Format currency for display
  */
 export function formatCurrency(amount: number, options?: { sign?: boolean }): string {
-  const sign = options?.sign && amount !== 0 ? (amount > 0 ? '+' : '') : '';
-  return `${sign}$${Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const isNegative = amount < 0;
+  const absAmount = Math.abs(amount);
+  const formatted = absAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const prefix = options?.sign && amount !== 0 ? (amount > 0 ? '+' : '-') : (isNegative ? '-' : '');
+  return `${prefix}$${formatted}`;
 }
 
 /**

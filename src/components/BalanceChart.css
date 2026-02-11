@@ -1,5 +1,38 @@
-.chart-card.card {
+.chart-card.card.balance-chart-card {
   padding: 2rem;
+}
+
+.balance-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.balance-chart-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+}
+
+.balance-chart-trend-icon {
+  flex-shrink: 0;
+}
+
+.balance-chart-trend--up {
+  color: var(--income);
+  background: rgba(22, 163, 74, 0.12);
+}
+
+.balance-chart-trend--down {
+  color: var(--expense);
+  background: rgba(220, 38, 38, 0.1);
 }
 
 .balance-chart {

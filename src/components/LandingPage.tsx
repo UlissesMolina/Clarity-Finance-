@@ -16,7 +16,7 @@ const TECH_STACK = ['React', 'TypeScript', 'Recharts', 'GraphQL', 'Apollo'];
 export default function LandingPage({ onViewDemo }: LandingPageProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
-  /* refs: 0=hero, 1=stats, 2=feature-full, 3=features, 4=tech, 5=footer */
+  /* refs: 0=hero, 1=stats, 2=feature-full, 3=analytics, 4=features, 5=tech, 6=footer */
 
   const navRef = useRef<HTMLElement>(null);
 
@@ -51,7 +51,8 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
       <nav ref={navRef} className="landing-nav" aria-label="Main">
         <div className="nav-inner">
           <a href="#hero" className="nav-logo">
-            Finance
+            <img src="/pie-chart.png" alt="Clarity Finance" className="nav-logo-img nav-logo-img--green" />
+            <span className="nav-logo-text">Clarity Finance</span>
           </a>
           <button
             type="button"
@@ -78,9 +79,12 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
         <div className="hero-bg" aria-hidden />
         <div className="hero-content">
           <span className="landing-hero-title-wrap">
-            <h1 className="landing-hero-title">Personal Finance Dashboard</h1>
+            <h1 className="landing-hero-title">Clarity Finance</h1>
           </span>
           <p className="landing-hero-subtitle">
+            See your money clearly
+          </p>
+          <p className="landing-hero-description">
             Track your income, expenses, and savings in one place.
           </p>
           <div className="landing-cta">
@@ -88,7 +92,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
               View Demo
             </button>
             <a
-              href="https://github.com"
+              href="https://github.com/UlissesMolina/FinanceDashBoard"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-secondary"
@@ -137,28 +141,42 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
             </button>
           </div>
           <div className="feature-full-visual">
-            <div className="dashboard-preview">
-              <div className="dashboard-preview-header">
-                <span className="preview-dot" />
-                <span className="preview-dot" />
-                <span className="preview-dot" />
-                <span className="preview-title">Finance Dashboard</span>
-              </div>
-              <div className="dashboard-preview-body">
-                <div className="preview-cards">
-                  <div className="preview-card" />
-                  <div className="preview-card" />
-                  <div className="preview-card" />
-                  <div className="preview-card" />
-                </div>
-                <div className="preview-chart" />
-              </div>
+            <div className="landing-screenshot-wrap landing-screenshot-wrap--dashboard">
+              <img
+                src="/assets/fiannceDashbordSS.png"
+                alt="Clarity Finance dashboard showing overview cards, balance chart, and transactions"
+                className="landing-screenshot"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features" className="landing-features" ref={(el) => { if (el) sectionRefs.current[3] = el; }}>
+      {/* Analytics screenshot section */}
+      <section className="feature-full feature-full--alt" ref={(el) => { if (el) sectionRefs.current[3] = el; }}>
+        <div className="feature-full-inner feature-full-inner--reverse">
+          <div className="feature-full-visual">
+            <div className="landing-screenshot-wrap landing-screenshot-wrap--analytics">
+              <img
+                src="/assets/analyticsSS.png"
+                alt="Spending analytics and category breakdown"
+                className="landing-screenshot"
+              />
+            </div>
+          </div>
+          <div className="feature-full-content">
+            <h2 className="feature-full-title">Spending analytics</h2>
+            <p className="feature-full-lead">
+              Understand where your money goes. Category breakdowns, trends, and detailed insights—all in one view.
+            </p>
+            <button type="button" className="btn btn-primary" onClick={onViewDemo}>
+              View Demo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" className="landing-features" ref={(el) => { if (el) sectionRefs.current[4] = el; }}>
         <h2 className="landing-section-title">More features</h2>
         <div className="features-grid">
           <div className="feature-card">
@@ -192,7 +210,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
         </div>
       </section>
 
-      <section id="tech" className="landing-tech" ref={(el) => { if (el) sectionRefs.current[4] = el; }}>
+      <section id="tech" className="landing-tech" ref={(el) => { if (el) sectionRefs.current[5] = el; }}>
         <h2 className="landing-section-title">Tech Stack</h2>
         <div className="tech-pills">
           {TECH_STACK.map((tech) => (
@@ -201,7 +219,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
         </div>
       </section>
 
-      <footer className="landing-footer" ref={(el) => { if (el) sectionRefs.current[5] = el; }}>
+      <footer className="landing-footer" ref={(el) => { if (el) sectionRefs.current[6] = el; }}>
         <div className="footer-grid">
           <div className="footer-section">
             <h4>Product</h4>
@@ -223,8 +241,8 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Finance Dashboard</span>
-          <span>For portfolio · No backend</span>
+          <span>© 2026 Clarity</span>
+          <span>See your money clearly</span>
         </div>
       </footer>
     </div>

@@ -305,8 +305,144 @@
 
 .transactions-empty {
   text-align: center;
+  padding: 3rem 2rem !important;
+}
+
+.transactions-empty-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transactions-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.transactions-empty-message {
+  font-size: 0.875rem;
   color: var(--gray-500);
-  padding: 2rem !important;
+  margin: 0;
+}
+
+.transactions-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.transactions-sort-btn:hover {
+  color: var(--gray-900);
+}
+
+.transactions-sort-btn--active {
+  color: var(--primary);
+}
+
+.th-actions,
+.td-actions {
+  width: 80px;
+  padding: 0.65rem 0.75rem !important;
+}
+
+.transactions-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transactions-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.transactions-action-btn:hover {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+.transactions-action-btn--delete:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--expense);
+}
+
+.transactions-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-top: 1px solid var(--gray-200);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.transactions-pagination-info {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.transactions-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.transactions-pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  background: var(--gray-100);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.transactions-pagination-btn:hover:not(:disabled) {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+.transactions-pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.transactions-pagination-btn--active {
+  background: var(--primary);
+  color: white;
+}
+
+.transactions-pagination-btn--active:hover {
+  background: var(--primary-dark);
 }
 
 @media (max-width: 640px) {

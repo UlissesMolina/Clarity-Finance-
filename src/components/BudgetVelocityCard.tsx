@@ -1,13 +1,22 @@
 import React from 'react';
 import { useQuery } from '@apollo/client/react';
-import { GET_OVERVIEW_METRICS } from '../graphql/queries';
-import type { GetOverviewMetricsQuery } from '../graphql/types';
+import { GET_OVERVIEW_METRICS, GET_SPENDING_BY_CATEGORY } from '../graphql/queries';
+import type { GetOverviewMetricsQuery, GetSpendingByCategoryQuery } from '../graphql/types';
 import { formatCurrency } from '../utils/formatters';
-import { Target } from 'lucide-react';
+import { Target, ChevronRight } from 'lucide-react';
+import { CATEGORY_COLORS } from '../types';
 import clsx from 'clsx';
 import './BudgetVelocityCard.css';
 
 const DEFAULT_BUDGET = 1500;
+const CATEGORY_BUDGETS: Record<string, number> = {
+  'Food & Dining': 500,
+  'Transportation': 300,
+  'Shopping': 400,
+  'Entertainment': 200,
+  'Bills & Utilities': 600,
+  'Healthcare': 250,
+};
 
 interface BudgetVelocityCardProps {
   year: number;
@@ -16,8 +25,19 @@ interface BudgetVelocityCardProps {
   className?: string;
 }
 
-export function BudgetVelocityCard({ year, month, period = 'MONTH', className }: BudgetVelocityCardProps) {
+interface BudgetVelocityCardProps {
+  year: number;
+  month: number;
+  period?: string;
+  onViewAll?: () => void;
+  className?: string;
+}
+
+export function BudgetVelocityCard({ year, month, period = 'MONTH', onViewAll, className }: BudgetVelocityCardProps) {
   const { data } = useQuery<GetOverviewMetricsQuery>(GET_OVERVIEW_METRICS, {
+    variables: { year, month, period },
+  });
+  const { data: spendingData } = useQuery<GetSpendingByCategoryQuery>(GET_SPENDING_BY_CATEGORY, {
     variables: { year, month, period },
   });
   const metrics = data?.overviewMetrics;
@@ -33,12 +53,31 @@ export function BudgetVelocityCard({ year, month, period = 'MONTH', className }:
   const dailyRate = daysElapsed > 0 ? spent / daysElapsed : 0;
   const projected = Math.round(dailyRate * daysInMonth);
 
+  const spending = spendingData?.spendingByCategory ?? [];
+  const topCategories = spending
+    .filter((c: { category: string; total: number }) => CATEGORY_BUDGETS[c.category] != null)
+    .map((c: { category: string; total: number }) => ({
+      category: c.category,
+      spent: c.total,
+      budget: CATEGORY_BUDGETS[c.category] ?? 0,
+      pct: CATEGORY_BUDGETS[c.category] > 0 ? Math.round((c.total / CATEGORY_BUDGETS[c.category]) * 100) : 0,
+    }))
+    .sort((a, b) => b.spent - a.spent)
+    .slice(0, 3);
+
   return (
     <div className={clsx('card', 'budget-velocity-card', className)}>
-      <h3 className="section-title">
-        <Target size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-        Budget & pace
-      </h3>
+      <div className="budget-header">
+        <h3 className="section-title">
+          <Target size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+          Budget & pace
+        </h3>
+        {onViewAll && (
+          <button type="button" className="budget-view-all-btn" onClick={onViewAll}>
+            View all budgets <ChevronRight size={14} />
+          </button>
+        )}
+      </div>
       <div className="budget-row">
         <span className="budget-label">Spent of budget</span>
         <span className="budget-value">
@@ -52,13 +91,43 @@ export function BudgetVelocityCard({ year, month, period = 'MONTH', className }:
           aria-valuenow={pct}
           aria-valuemin={0}
           aria-valuemax={100}
-        />
+        >
+          <span className="budget-bar-text">{pct}%</span>
+        </div>
       </div>
-      <p className="budget-pct">{pct}% of budget used</p>
       {period === 'MONTH' && (
         <p className="velocity-line">
           On track to spend <strong>{formatCurrency(projected)}</strong> this month
         </p>
+      )}
+      {topCategories.length > 0 && (
+        <div className="budget-categories">
+          <h4 className="budget-categories-title">Top categories</h4>
+          {topCategories.map((cat) => (
+            <div key={cat.category} className="budget-category-item">
+              <div className="budget-category-header">
+                <span
+                  className="budget-category-name"
+                  style={{ color: CATEGORY_COLORS[cat.category] ?? CATEGORY_COLORS['Other'] }}
+                >
+                  {cat.category}
+                </span>
+                <span className="budget-category-amount">{formatCurrency(cat.spent)}</span>
+              </div>
+              <div className="budget-category-bar-wrap">
+                <div
+                  className="budget-category-bar"
+                  style={{
+                    width: `${Math.min(cat.pct, 100)}%`,
+                    backgroundColor: (CATEGORY_COLORS[cat.category] ?? CATEGORY_COLORS['Other']) + '40',
+                  }}
+                >
+                  <span className="budget-category-bar-text">{cat.pct}%</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

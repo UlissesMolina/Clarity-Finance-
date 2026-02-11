@@ -1,0 +1,169 @@
+.analytics-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.analytics-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.analytics-header-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.analytics-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0 0 0.25rem 0;
+}
+
+.analytics-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  margin: 0 0 0.25rem 0;
+}
+
+.analytics-description {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin: 0;
+}
+
+.analytics-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.analytics-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.analytics-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.analytics-chart {
+  width: 100%;
+}
+
+.analytics-breakdown {
+  padding: 1.75rem;
+}
+
+.breakdown-intro {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin: -0.25rem 0 1rem 0;
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.breakdown-empty {
+  text-align: center;
+  color: var(--gray-500);
+  padding: 2rem 0;
+  margin: 0;
+}
+
+.breakdown-item {
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
+}
+
+.breakdown-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.breakdown-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.breakdown-item-category {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.breakdown-item-trend {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: var(--gray-200);
+  color: var(--gray-700);
+}
+
+.breakdown-item-trend--up {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--expense);
+}
+
+.breakdown-item-trend--down {
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--income);
+}
+
+.breakdown-item-details {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.breakdown-item-amount {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.breakdown-item-meta {
+  font-size: 0.8125rem;
+  color: var(--gray-500);
+}
+
+.analytics-trends {
+  padding: 1.75rem;
+}
+
+@media (max-width: 640px) {
+  .analytics-page {
+    padding: 1rem;
+  }
+
+  .analytics-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .analytics-title {
+    font-size: 1.5rem;
+  }
+}

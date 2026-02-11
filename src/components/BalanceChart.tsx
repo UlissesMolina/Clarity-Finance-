@@ -10,9 +10,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from 'recharts';
 import { formatCurrency } from '../utils/formatters';
 import { formatDateShort } from '../utils/formatters';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import clsx from 'clsx';
 import './BalanceChart.css';
 
@@ -20,10 +22,11 @@ interface BalanceChartProps {
   year: number;
   month: number;
   period?: string;
+  showTrend?: boolean;
   className?: string;
 }
 
-export function BalanceChart({ year, month, period = 'MONTH', className }: BalanceChartProps) {
+export function BalanceChart({ year, month, period = 'MONTH', showTrend = false, className }: BalanceChartProps) {
   const { data, loading, error } = useQuery<GetDailyBalancesQuery>(GET_DAILY_BALANCES, {
     variables: { year, month, period },
   });
@@ -47,9 +50,26 @@ export function BalanceChart({ year, month, period = 'MONTH', className }: Balan
     displayDate: formatDateShort(d.date),
   }));
 
+  const firstBalance = daily[0]?.balance ?? 0;
+  const lastBalance = daily[daily.length - 1]?.balance ?? 0;
+  const trendPct =
+    firstBalance !== 0 ? Math.round(((lastBalance - firstBalance) / Math.abs(firstBalance)) * 100) : (lastBalance >= 0 ? 100 : -100);
+  const trendUp = lastBalance >= firstBalance;
+
   return (
-    <div className={clsx('chart-card', 'card', className)}>
-      <h3 className="section-title">Balance Over Time</h3>
+    <div className={clsx('chart-card', 'card', 'balance-chart-card', className)}>
+      <div className="balance-chart-header">
+        <h3 className="section-title">Balance Over Time</h3>
+        {showTrend && (
+          <span
+            className={clsx('balance-chart-trend', trendUp ? 'balance-chart-trend--up' : 'balance-chart-trend--down')}
+            title={trendUp ? `Balance up ${trendPct}% this period` : `Balance down ${Math.abs(trendPct)}% this period`}
+          >
+            {trendUp ? <TrendingUp size={14} className="balance-chart-trend-icon" aria-hidden /> : <TrendingDown size={14} className="balance-chart-trend-icon" aria-hidden />}
+            <span>{trendUp ? trendPct : Math.abs(trendPct)}% this period</span>
+          </span>
+        )}
+      </div>
       <div className="balance-chart">
         <ResponsiveContainer width="100%" height={260}>
           <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -59,25 +79,32 @@ export function BalanceChart({ year, month, period = 'MONTH', className }: Balan
                 <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--gray-200)" vertical={false} />
+            <ReferenceLine y={0} stroke="var(--gray-400)" strokeDasharray="4 4" strokeOpacity={0.8} />
             <XAxis
               dataKey="displayDate"
               tick={{ fontSize: 11, fill: 'var(--gray-500)' }}
               tickLine={false}
-              axisLine={{ stroke: '#f3f4f6' }}
+              axisLine={{ stroke: 'var(--gray-200)' }}
               interval="preserveStartEnd"
             />
             <YAxis
-              tickFormatter={(v) => `$${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`}
+              tickFormatter={(v) => {
+                const isNegative = v < 0;
+                const absV = Math.abs(v);
+                const formatted = absV >= 1000 ? `${(absV / 1000).toFixed(0)}k` : String(absV);
+                return `${isNegative ? '-' : ''}$${formatted}`;
+              }}
               tick={{ fontSize: 11, fill: 'var(--gray-500)' }}
               tickLine={false}
               axisLine={false}
               width={44}
             />
             <Tooltip
-              formatter={(value: number | undefined) => [value != null ? formatCurrency(value) : '—', 'Balance']}
-              labelFormatter={(label, payload) => (payload?.[0]?.payload?.date ? formatDateShort(payload[0].payload.date) : label)}
-              contentStyle={{ borderRadius: 8, border: '1px solid var(--gray-200)' }}
+              formatter={(value: number | undefined) => [value != null ? formatCurrency(value, { sign: true }) : '—', 'Balance']}
+              labelFormatter={(_, payload) => (payload?.[0]?.payload?.date ? formatDateShort(payload[0].payload.date) : '')}
+              contentStyle={{ borderRadius: 8, border: '1px solid var(--gray-200)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+              itemStyle={{ fontWeight: 600 }}
             />
             <Area
               type="monotone"

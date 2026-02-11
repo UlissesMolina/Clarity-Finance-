@@ -10,6 +10,52 @@
   }
 }
 
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.dashboard-main-row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.dashboard-content {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.dashboard-footer {
+  flex-shrink: 0;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--gray-500);
+  text-align: center;
+  border-top: 1px solid var(--gray-200);
+  background: var(--card-bg);
+}
+
+.tab-content-wrapper {
+  animation: tab-content-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tab-content-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
@@ -61,27 +107,266 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1rem;
-}
-
-.dashboard-header-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.dashboard-insight {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0 0 1rem 0;
-  padding: 0.5rem 0;
-  animation: dashboard-card-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.06s backwards;
+  padding-left: 0.5rem;
 }
 
 .dashboard-header-left {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-header-center {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-left: 1rem;
+}
+
+.dashboard-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+/* Compact time period pills in header */
+.dashboard-period-pills.time-period-tabs {
+  padding: 2px;
+  background: var(--gray-100);
+  border-radius: 8px;
+}
+
+.dashboard-period-pills .period-tab {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+
+.dashboard-month-picker.month-picker {
+  padding: 0.25rem 0.4rem;
+}
+
+.dashboard-month-picker .month-picker-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.dashboard-month-picker .month-picker-label {
+  min-width: 120px;
+  font-size: 0.875rem;
+}
+
+/* Notification icon (bell + badge) */
+.dashboard-notification-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dashboard-notification-btn:hover {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+.dashboard-notification-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: white;
+  background: var(--expense);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Three-dots menu */
+.dashboard-header-menu-wrap {
+  position: relative;
+  margin-left: 0.15rem;
+}
+
+.dashboard-header-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dashboard-header-menu-btn:hover {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+.dashboard-header-menu-btn[aria-expanded="true"] {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+.dashboard-header-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+}
+
+.dashboard-header-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  min-width: 160px;
+  padding: 0.35rem;
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.dashboard-header-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dashboard-header-menu-item:hover {
+  background: var(--gray-100);
+  color: var(--gray-900);
+}
+
+.dashboard-insights {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-insight-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(220, 38, 38, 0.04) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 12px;
+  animation: dashboard-card-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.06s backwards;
+  transition: opacity 0.3s ease;
+}
+
+.dashboard-insight-card--active {
+  opacity: 1;
+}
+
+.dashboard-insight-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(220, 38, 38, 0.15);
+  border-radius: 10px;
+  color: var(--expense);
+  flex-shrink: 0;
+}
+
+.dashboard-insight-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-insight-text {
+  font-size: 0.9375rem;
+  color: var(--gray-900);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.5;
+}
+
+.dashboard-insight-text strong {
+  font-weight: 700;
+  color: var(--expense);
+}
+
+.dashboard-insight-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--expense);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: gap 0.15s;
+}
+
+.dashboard-insight-link:hover {
+  gap: 0.4rem;
+  text-decoration: underline;
+}
+
+.dashboard-insight-dots {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.dashboard-insight-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(220, 38, 38, 0.3);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  padding: 0;
+}
+
+.dashboard-insight-dot:hover {
+  background: rgba(220, 38, 38, 0.5);
+  transform: scale(1.2);
+}
+
+.dashboard-insight-dot--active {
+  background: var(--expense);
+  transform: scale(1.2);
 }
 
 .back-btn {
@@ -124,7 +409,6 @@
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
-  margin-left: 0.5rem;
   box-shadow:
     0 4px 12px rgba(16, 185, 129, 0.25),
     0 2px 4px rgba(0, 0, 0, 0.08);
@@ -175,6 +459,12 @@
   top: 1rem;
 }
 
+.dashboard-main-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 @media (max-width: 900px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -182,6 +472,30 @@
 
   .dashboard-sidebar {
     position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+
+  .navigation-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0.5rem;
+  }
+
+  .navigation-nav {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .dashboard-content {
+    flex: 1;
   }
 }
 
@@ -199,6 +513,10 @@
   }
 
   .overview-cards > * {
+    animation: none;
+  }
+
+  .tab-content-wrapper {
     animation: none;
   }
 }

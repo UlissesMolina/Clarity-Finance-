@@ -5,7 +5,7 @@ import type { GetTransactionsByMonthQuery } from '../graphql/types';
 import { formatCurrency, formatDateShort } from '../utils/formatters';
 import { CATEGORY_COLORS, CATEGORIES } from '../types';
 import { TransactionDetailModal, type TransactionDetail } from './TransactionDetailModal';
-import { Search, X, ChevronDown, ChevronRight, FileDown, FileText } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronRight, FileDown, FileText, Edit2, Trash2, ChevronLeft, ChevronUp, ChevronDown as ChevronDownIcon } from 'lucide-react';
 import clsx from 'clsx';
 import './TransactionsTable.css';
 
@@ -13,6 +13,8 @@ const PAGE_SIZE = 20;
 const EXPENSE_CATEGORIES = CATEGORIES.filter((c) => c !== 'Income');
 
 export type TransactionTypeFilter = 'all' | 'income' | 'expense';
+export type SortField = 'date' | 'description' | 'category' | 'amount';
+export type SortDirection = 'asc' | 'desc';
 
 interface TransactionsTableProps {
   year: number;
@@ -20,6 +22,7 @@ interface TransactionsTableProps {
   period?: string;
   categoryFilter?: string | null;
   onClearCategoryFilter?: () => void;
+  limit?: number;
   className?: string;
 }
 
@@ -70,11 +73,15 @@ export function TransactionsTable({
   period = 'MONTH',
   categoryFilter,
   onClearCategoryFilter,
+  limit,
   className,
 }: TransactionsTableProps) {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<TransactionTypeFilter>('all');
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [detailTx, setDetailTx] = useState<TransactionDetail | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -119,9 +126,48 @@ export function TransactionsTable({
   if (categoryFilter) {
     filtered = filtered.filter((t: { category: string }) => t.category === categoryFilter);
   }
-  const totalCount = filtered.length;
-  const displayList = filtered.slice(0, visibleCount) as TransactionDetail[];
-  const hasMore = visibleCount < totalCount;
+
+  // Sort
+  const sorted = [...filtered].sort((a, b) => {
+    let aVal: string | number = '';
+    let bVal: string | number = '';
+    if (sortField === 'date') {
+      aVal = new Date(a.date).getTime();
+      bVal = new Date(b.date).getTime();
+    } else if (sortField === 'description') {
+      aVal = a.description.toLowerCase();
+      bVal = b.description.toLowerCase();
+    } else if (sortField === 'category') {
+      aVal = a.category.toLowerCase();
+      bVal = b.category.toLowerCase();
+    } else if (sortField === 'amount') {
+      aVal = Math.abs(a.amount);
+      bVal = Math.abs(b.amount);
+    }
+    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const totalCount = sorted.length;
+  const totalPages = limit ? 1 : Math.ceil(totalCount / PAGE_SIZE);
+  const startIndex = limit ? 0 : (currentPage - 1) * PAGE_SIZE;
+  const endIndex = limit ? Math.min(limit, totalCount) : Math.min(startIndex + PAGE_SIZE, totalCount);
+  const displayList = sorted.slice(startIndex, endIndex) as TransactionDetail[];
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const toggleExpand = (t: TransactionDetail) => {
     setExpandedId((id) => (id === t.id ? null : t.id));
@@ -138,7 +184,8 @@ export function TransactionsTable({
 
   return (
     <div className={clsx('card', 'transactions-card', className)}>
-      <div className="transactions-type-filters">
+      {!limit && (
+        <div className="transactions-type-filters">
         <button
           type="button"
           className={clsx('transactions-type-btn', typeFilter === 'all' && 'transactions-type-btn--active')}
@@ -164,6 +211,7 @@ export function TransactionsTable({
           Expenses
         </button>
       </div>
+      )}
       <div className="transactions-header">
         <h3 className="section-title">Recent Transactions</h3>
         <div className="transactions-header-actions">
@@ -205,23 +253,65 @@ export function TransactionsTable({
           <thead>
             <tr>
               <th className="th-expand" aria-label="Expand" />
-              <th>Date</th>
-              <th>Description</th>
-              <th>Category</th>
-              <th className="amount-col">Amount</th>
+              <th>
+                <button
+                  type="button"
+                  className={clsx('transactions-sort-btn', sortField === 'date' && 'transactions-sort-btn--active')}
+                  onClick={() => handleSort('date')}
+                >
+                  Date
+                  {sortField === 'date' && (sortDirection === 'asc' ? <ChevronUp size={14} /> : <ChevronDownIcon size={14} />)}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  className={clsx('transactions-sort-btn', sortField === 'description' && 'transactions-sort-btn--active')}
+                  onClick={() => handleSort('description')}
+                >
+                  Description
+                  {sortField === 'description' && (sortDirection === 'asc' ? <ChevronUp size={14} /> : <ChevronDownIcon size={14} />)}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  className={clsx('transactions-sort-btn', sortField === 'category' && 'transactions-sort-btn--active')}
+                  onClick={() => handleSort('category')}
+                >
+                  Category
+                  {sortField === 'category' && (sortDirection === 'asc' ? <ChevronUp size={14} /> : <ChevronDownIcon size={14} />)}
+                </button>
+              </th>
+              <th className="amount-col">
+                <button
+                  type="button"
+                  className={clsx('transactions-sort-btn', sortField === 'amount' && 'transactions-sort-btn--active')}
+                  onClick={() => handleSort('amount')}
+                >
+                  Amount
+                  {sortField === 'amount' && (sortDirection === 'asc' ? <ChevronUp size={14} /> : <ChevronDownIcon size={14} />)}
+                </button>
+              </th>
+              <th className="th-actions" aria-label="Actions" />
             </tr>
           </thead>
           <tbody>
             {displayList.length === 0 ? (
               <tr>
-                <td colSpan={5} className="transactions-empty">
-                  {categoryFilter
-                    ? `No transactions in ${categoryFilter}.`
-                    : typeFilter !== 'all'
-                    ? `No ${typeFilter} transactions this period.`
-                    : search.trim()
-                    ? 'No transactions match your search.'
-                    : 'No transactions this period.'}
+                <td colSpan={6} className="transactions-empty">
+                  <div className="transactions-empty-content">
+                    <p className="transactions-empty-title">No transactions found</p>
+                    <p className="transactions-empty-message">
+                      {categoryFilter
+                        ? `No transactions in ${categoryFilter}.`
+                        : typeFilter !== 'all'
+                        ? `No ${typeFilter} transactions this period.`
+                        : search.trim()
+                        ? 'No transactions match your search.'
+                        : 'No transactions this period.'}
+                    </p>
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -233,6 +323,8 @@ export function TransactionsTable({
                     <tr
                       className={clsx('transactions-row-clickable', expanded && 'transactions-row-expanded')}
                       onClick={() => toggleExpand(t)}
+                      onMouseEnter={() => setHoveredRowId(t.id)}
+                      onMouseLeave={() => setHoveredRowId(null)}
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) => e.key === 'Enter' && toggleExpand(t)}
@@ -258,10 +350,42 @@ export function TransactionsTable({
                       <td className={clsx('amount-cell', t.type === 'income' ? 'amount-income' : 'amount-expense')}>
                         {formatCurrency(t.amount, { sign: true })}
                       </td>
+                      <td className="td-actions">
+                        {hoveredRowId === t.id && (
+                          <div className="transactions-row-actions" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              className="transactions-action-btn"
+                              onClick={() => {
+                                setDetailTx(t);
+                                setDetailOpen(true);
+                              }}
+                              aria-label={`Edit ${t.description}`}
+                              title="Edit"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                            <button
+                              type="button"
+                              className="transactions-action-btn transactions-action-btn--delete"
+                              onClick={() => {
+                                // TODO: Implement delete mutation
+                                if (window.confirm(`Delete transaction "${t.description}"?`)) {
+                                  console.log('Delete transaction', t.id);
+                                }
+                              }}
+                              aria-label={`Delete ${t.description}`}
+                              title="Delete"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
                     </tr>
                     {expanded && (
                       <tr className="transactions-expanded-row">
-                        <td colSpan={5} className="transactions-expanded-cell" onClick={(e) => e.stopPropagation()}>
+                        <td colSpan={6} className="transactions-expanded-cell" onClick={(e) => e.stopPropagation()}>
                           <div className="transactions-expanded-content">
                             <div className="transactions-expanded-section">
                               <label className="transactions-expanded-label">Notes</label>
@@ -314,15 +438,55 @@ export function TransactionsTable({
           </tbody>
         </table>
       </div>
-      {hasMore && (
-        <div className="transactions-load-more">
-          <button
-            type="button"
-            className="transactions-load-more-btn"
-            onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-          >
-            Load more ({totalCount - visibleCount} remaining)
-          </button>
+      {!limit && totalPages > 1 && (
+        <div className="transactions-pagination">
+          <div className="transactions-pagination-info">
+            Showing {startIndex + 1}-{endIndex} of {totalCount}
+          </div>
+          <div className="transactions-pagination-controls">
+            <button
+              type="button"
+              className="transactions-pagination-btn"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              aria-label="Previous page"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum: number;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              return (
+                <button
+                  key={pageNum}
+                  type="button"
+                  className={clsx('transactions-pagination-btn', currentPage === pageNum && 'transactions-pagination-btn--active')}
+                  onClick={() => handlePageChange(pageNum)}
+                  aria-label={`Page ${pageNum}`}
+                  aria-current={currentPage === pageNum ? 'page' : undefined}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              className="transactions-pagination-btn"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              aria-label="Next page"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
       )}
       <TransactionDetailModal
