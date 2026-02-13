@@ -9,6 +9,14 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
   min-width: 0;
   overflow: visible;
+  opacity: 0.92;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.landing-analytics-chart-wrap--in-view {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .landing-chart-hint {
@@ -29,10 +37,49 @@
   opacity: 0.8;
 }
 
+/* Chart area: hosts skeleton (when out of view) and chart */
+.landing-chart-area {
+  position: relative;
+  min-height: 280px;
+}
+
+/* Loading skeleton: donut-shaped pulse when chart is not yet in view */
+.landing-chart-skeleton {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.landing-chart-skeleton-donut {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 14px solid var(--gray-200);
+  border-top-color: var(--gray-400);
+  animation: landing-chart-skeleton-spin 0.9s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes landing-chart-skeleton-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .landing-analytics-chart {
   width: 100%;
   min-height: 280px;
   min-width: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.landing-analytics-chart--visible {
+  opacity: 1;
 }
 
 .landing-analytics-chart--pointer {
@@ -145,6 +192,14 @@
   font-weight: 500;
 }
 
+/* Mobile: legend rendered below chart (outside Recharts) */
+.landing-chart-legend-mobile {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-100);
+  width: 100%;
+}
+
 @media (max-width: 768px) {
   .landing-analytics-chart-wrap {
     max-width: 100%;
@@ -152,23 +207,42 @@
     min-width: 0;
   }
 
-  .landing-analytics-chart {
+  .landing-chart-area {
     min-height: 260px;
   }
 
-  .landing-chart-legend {
+  .landing-chart-skeleton-donut {
+    width: 128px;
+    height: 128px;
+    border-width: 10px;
+  }
+
+  .landing-analytics-chart {
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 2-column grid so each legend item has room and doesn't wrap mid-line */
+  .landing-chart-legend-mobile .landing-chart-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem 0.75rem;
-    margin-top: 0.75rem;
+    margin: 0;
+    justify-content: start;
   }
 
-  .landing-chart-legend-item {
-    padding: 0.35rem 0.5rem;
+  .landing-chart-legend-mobile .landing-chart-legend-item {
+    padding: 0.4rem 0.5rem;
     min-height: 2.25rem;
+    min-width: 0;
   }
 
-  .landing-chart-legend-label {
+  .landing-chart-legend-mobile .landing-chart-legend-label {
     font-size: 0.7rem;
-    line-height: 1.3;
+    line-height: 1.35;
+    word-break: break-word;
   }
 
   .landing-chart-mobile-tooltip {

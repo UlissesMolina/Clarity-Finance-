@@ -426,13 +426,13 @@
   background: var(--card-bg);
 }
 
-/* Less padding where feature sections meet the tech strip */
+/* Tighter padding where feature sections meet the tech strip */
 .feature-full:has(+ .tech-strip) {
-  padding-bottom: var(--space-10);
+  padding-bottom: var(--space-5);
 }
 
 .tech-strip + .feature-full {
-  padding-top: var(--space-10);
+  padding-top: var(--space-5);
 }
 
 .feature-full-inner {
@@ -807,7 +807,7 @@
 
 /* Tech strip: scroll animation + “Built with” header */
 .tech-strip {
-  padding: var(--space-6) var(--space-6);
+  padding: var(--space-4) var(--space-6);
   background: var(--card-bg);
   text-align: center;
 }
@@ -1082,8 +1082,8 @@
 
   .tech-icons-row {
     gap: var(--space-6);
-    margin-top: var(--space-10);
-    padding-top: var(--space-8);
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
   }
 
   .tech-icons-row-icon {

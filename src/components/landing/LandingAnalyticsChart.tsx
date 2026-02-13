@@ -97,7 +97,7 @@ function CustomLegend({ payload = [], activeIndex, onItemHover, onItemClick }: C
 
 const PIE_MOBILE_BREAKPOINT = 768;
 const CHART_HEIGHT_DESKTOP = 300;
-const CHART_HEIGHT_MOBILE = 280;
+const CHART_HEIGHT_MOBILE = 260;
 
 export function LandingAnalyticsChart() {
   const [inView, setInView] = useState(false);
@@ -136,7 +136,7 @@ export function LandingAnalyticsChart() {
   };
 
   return (
-    <div ref={containerRef} className="landing-analytics-chart-wrap">
+    <div ref={containerRef} className={`landing-analytics-chart-wrap ${inView ? 'landing-analytics-chart-wrap--in-view' : ''}`}>
       <p className="landing-chart-hint" aria-hidden>
         {isMobile ? (
           <>
@@ -150,15 +150,21 @@ export function LandingAnalyticsChart() {
           </>
         )}
       </p>
-      <div className="landing-analytics-chart landing-analytics-chart--pointer">
+      <div className="landing-chart-area">
+        {!inView && (
+          <div className="landing-chart-skeleton" aria-hidden>
+            <div className="landing-chart-skeleton-donut" />
+          </div>
+        )}
+        <div className={`landing-analytics-chart landing-analytics-chart--pointer ${inView ? 'landing-analytics-chart--visible' : ''}`}>
         <ResponsiveContainer width="100%" height={isMobile ? CHART_HEIGHT_MOBILE : CHART_HEIGHT_DESKTOP}>
           <PieChart>
             <Pie
               data={chartData}
               cx="50%"
-              cy={isMobile ? '45%' : '50%'}
-              innerRadius={isMobile ? 44 : 56}
-              outerRadius={isMobile ? 72 : 96}
+              cy={isMobile ? '50%' : '50%'}
+              innerRadius={isMobile ? 40 : 56}
+              outerRadius={isMobile ? 64 : 96}
               paddingAngle={2}
               dataKey="value"
               nameKey="name"
@@ -182,20 +188,35 @@ export function LandingAnalyticsChart() {
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
-            <Legend
-              content={(props: { payload?: LegendPayloadItem[] }) => (
-                <CustomLegend
-                  payload={props.payload}
-                  activeIndex={displayIndex}
-                  onItemHover={isMobile ? undefined : setActiveIndex}
-                  onItemClick={isMobile ? (i) => setSelectedIndex(selectedIndex === i ? null : i) : undefined}
-                />
-              )}
-              payload={chartData.map((d) => ({ value: d.name, color: d.color, payload: { value: d.value, percent: d.percent } }))}
-            />
+            {!isMobile && (
+              <Legend
+                layout="vertical"
+                verticalAlign="middle"
+                align="right"
+                content={(props: { payload?: LegendPayloadItem[] }) => (
+                  <CustomLegend
+                    payload={props.payload}
+                    activeIndex={displayIndex}
+                    onItemHover={setActiveIndex}
+                  />
+                )}
+                payload={chartData.map((d) => ({ value: d.name, color: d.color, payload: { value: d.value, percent: d.percent } }))}
+              />
+            )}
           </PieChart>
         </ResponsiveContainer>
+        </div>
       </div>
+      {isMobile && (
+        <div className="landing-chart-legend-mobile">
+          <CustomLegend
+            payload={chartData.map((d) => ({ value: d.name, color: d.color, payload: { value: d.value, percent: d.percent } }))}
+            activeIndex={displayIndex}
+            onItemHover={undefined}
+            onItemClick={(i) => setSelectedIndex(selectedIndex === i ? null : i)}
+          />
+        </div>
+      )}
       {isMobile && selectedIndex != null && (
         <div className="landing-chart-mobile-tooltip" role="status">
           <span className="landing-chart-tooltip-name">{chartData[selectedIndex].name}</span>

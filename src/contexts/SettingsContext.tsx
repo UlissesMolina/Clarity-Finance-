@@ -11,6 +11,7 @@ export type ColorThemeId = 'default' | 'ocean' | 'sunset' | 'slate';
 interface StoredSettings {
   currency?: CurrencyCode;
   colorThemeId?: string;
+  darkMode?: boolean;
 }
 
 const LEGACY_CURRENCY_KEY = 'finance-dashboard-currency';
@@ -44,16 +45,22 @@ function getInitialColorThemeId(): string {
   return s.colorThemeId && VALID_THEMES.includes(s.colorThemeId) ? s.colorThemeId : 'default';
 }
 
+function getInitialDarkMode(): boolean {
+  const s = loadStored();
+  return s.darkMode === true;
+}
+
 interface SettingsState {
   currency: CurrencyCode;
   colorThemeId: string;
+  darkMode: boolean;
 }
 
 interface SettingsContextValue extends SettingsState {
   setCurrency: (code: CurrencyCode) => void;
   setColorThemeId: (id: string) => void;
   /** Persist settings. Pass explicit values when saving from draft (e.g. on Save click) so they are written immediately. */
-  saveSettings: (overrides?: { currency?: CurrencyCode; colorThemeId?: string }) => void;
+  saveSettings: (overrides?: { currency?: CurrencyCode; colorThemeId?: string; darkMode?: boolean }) => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -61,6 +68,11 @@ const SettingsContext = createContext<SettingsContextValue | null>(null);
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrencyState] = useState<CurrencyCode>(getInitialCurrency);
   const [colorThemeId, setColorThemeIdState] = useState<string>(getInitialColorThemeId);
+  const [darkMode, setDarkModeState] = useState<boolean>(getInitialDarkMode);
+
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark-mode', darkMode);
+  }, [darkMode]);
 
   const setCurrency = useCallback((code: CurrencyCode) => {
     setCurrencyState(code);
@@ -72,19 +84,21 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const saveSettings = useCallback((overrides?: { currency?: CurrencyCode; colorThemeId?: string }) => {
+  const saveSettings = useCallback((overrides?: { currency?: CurrencyCode; colorThemeId?: string; darkMode?: boolean }) => {
     try {
       const toSave: StoredSettings = {
         currency: overrides?.currency ?? currency,
         colorThemeId: overrides?.colorThemeId ?? colorThemeId,
+        darkMode: overrides?.darkMode ?? darkMode,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
       if (overrides?.currency != null) setCurrencyState(overrides.currency);
       if (overrides?.colorThemeId != null) setColorThemeIdState(overrides.colorThemeId);
+      if (overrides?.darkMode !== undefined) setDarkModeState(overrides.darkMode);
     } catch {
       /* ignore */
     }
-  }, [currency, colorThemeId]);
+  }, [currency, colorThemeId, darkMode]);
 
   const themeStyle = useMemo(() => {
     const theme = COLOR_THEMES.find((t) => t.id === colorThemeId);
@@ -95,6 +109,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const value: SettingsContextValue = {
     currency,
     colorThemeId,
+    darkMode,
     setCurrency,
     setColorThemeId,
     saveSettings,

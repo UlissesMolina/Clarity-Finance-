@@ -32,16 +32,16 @@ const DEFAULT_VIEW_OPTIONS = [
 ];
 
 export function Settings({ className }: SettingsProps) {
-  const { currency, setCurrency, colorThemeId, setColorThemeId, saveSettings } = useSettings();
+  const { currency, setCurrency, colorThemeId, setColorThemeId, darkMode, saveSettings } = useSettings();
   const [draftCurrency, setDraftCurrency] = useState<CurrencyCode>(currency);
   const [draftColorThemeId, setDraftColorThemeId] = useState(colorThemeId);
+  const [draftDarkMode, setDraftDarkMode] = useState(darkMode);
   const [name, setName] = useState('Account Holder');
   const [email, setEmail] = useState('user@example.com');
   const [dateFormat, setDateFormat] = useState('MM/dd/yyyy');
   const [defaultView, setDefaultView] = useState('list');
   const [budgetThreshold, setBudgetThreshold] = useState(80);
   const [weeklyEmails, setWeeklyEmails] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [colorThemeOpen, setColorThemeOpen] = useState(false);
   const [savedFeedback, setSavedFeedback] = useState(false);
   const [toastExiting, setToastExiting] = useState(false);
@@ -51,7 +51,8 @@ export function Settings({ className }: SettingsProps) {
   useEffect(() => {
     setDraftCurrency(currency);
     setDraftColorThemeId(colorThemeId);
-  }, [currency, colorThemeId]);
+    setDraftDarkMode(darkMode);
+  }, [currency, colorThemeId, darkMode]);
 
   const applyColorThemeOption = (themeId: string) => {
     setDraftColorThemeId(themeId);
@@ -59,7 +60,7 @@ export function Settings({ className }: SettingsProps) {
   };
 
   const handleSaveSettings = () => {
-    saveSettings({ currency: draftCurrency, colorThemeId: draftColorThemeId });
+    saveSettings({ currency: draftCurrency, colorThemeId: draftColorThemeId, darkMode: draftDarkMode });
     setToastExiting(false);
     setSavedFeedback(true);
     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
@@ -105,11 +106,6 @@ export function Settings({ className }: SettingsProps) {
     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       alert('Account deletion would be processed. This is a demo.');
     }
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-    document.documentElement.classList.toggle('dark-mode', !darkMode);
   };
 
   return (
@@ -266,9 +262,9 @@ export function Settings({ className }: SettingsProps) {
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={darkMode}
-                  className={clsx('settings-toggle', darkMode && 'settings-toggle--on')}
-                  onClick={toggleDarkMode}
+                  aria-checked={draftDarkMode}
+                  className={clsx('settings-toggle', draftDarkMode && 'settings-toggle--on')}
+                  onClick={() => setDraftDarkMode((prev) => !prev)}
                 >
                   <span className="settings-toggle-thumb" />
                 </button>
