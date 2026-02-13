@@ -1,0 +1,158 @@
+.landing-analytics-chart-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.landing-chart-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+
+.landing-chart-hint svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.landing-analytics-chart {
+  width: 100%;
+  min-height: 300px;
+}
+
+.landing-analytics-chart--pointer {
+  cursor: pointer;
+}
+
+.landing-chart-mobile-tooltip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.landing-chart-mobile-tooltip .landing-chart-tooltip-name {
+  font-size: 0.875rem;
+}
+
+.landing-chart-mobile-tooltip .landing-chart-tooltip-amount {
+  font-size: 1rem;
+}
+
+.landing-chart-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  font-size: 0.8125rem;
+}
+
+.landing-chart-tooltip-name {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.landing-chart-tooltip-amount {
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.landing-chart-tooltip-pct {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+.landing-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin: 1rem 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+@media (pointer: fine) {
+  .landing-chart-legend-item {
+    cursor: default;
+  }
+}
+
+.landing-chart-legend-item:hover,
+.landing-chart-legend-item--active {
+  background: var(--gray-100);
+}
+
+.landing-chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.landing-chart-legend-label {
+  font-size: 0.75rem;
+  color: var(--gray-700);
+}
+
+.landing-chart-legend-item--active .landing-chart-legend-label {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.landing-chart-legend-amount {
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.landing-chart-legend-pct {
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .landing-analytics-chart-wrap {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .landing-chart-legend {
+    gap: 0.5rem 1rem;
+  }
+
+  .landing-chart-legend-label {
+    font-size: 0.7rem;
+  }
+}

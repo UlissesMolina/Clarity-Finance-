@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ApolloProvider } from '@apollo/client/react';
 import { apolloClient } from './graphql/client';
-import LandingPage from './components/LandingPage';
-import Dashboard from './Dashboard';
+import LandingPage from './pages/LandingPage';
+import Dashboard from './pages/Dashboard';
 
 function AppContent() {
   const [showDashboard, setShowDashboard] = useState(false);

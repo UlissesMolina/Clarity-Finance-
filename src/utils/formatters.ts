@@ -1,14 +1,38 @@
 import { startOfWeek, endOfWeek } from 'date-fns';
 
-/**
- * Format currency for display
- */
-export function formatCurrency(amount: number, options?: { sign?: boolean }): string {
+const CURRENCY_LOCALES: Record<string, string> = {
+  USD: 'en-US',
+  EUR: 'de-DE',
+  GBP: 'en-GB',
+  JPY: 'ja-JP',
+  CAD: 'en-CA',
+};
+
+/** Format currency with a given code (for use with useFormatCurrency / context) */
+export function formatCurrencyWithCode(
+  amount: number,
+  currencyCode: string,
+  options?: { sign?: boolean }
+): string {
   const isNegative = amount < 0;
   const absAmount = Math.abs(amount);
-  const formatted = absAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const locale = CURRENCY_LOCALES[currencyCode] ?? 'en-US';
+  const noDecimals = currencyCode === 'JPY';
+  const formatted = absAmount.toLocaleString(locale, {
+    style: 'currency',
+    currency: currencyCode,
+    minimumFractionDigits: noDecimals ? 0 : 2,
+    maximumFractionDigits: noDecimals ? 0 : 2,
+  });
   const prefix = options?.sign && amount !== 0 ? (amount > 0 ? '+' : '-') : (isNegative ? '-' : '');
-  return `${prefix}$${formatted}`;
+  return prefix ? `${prefix}${formatted}` : formatted;
+}
+
+/**
+ * Format currency for display (default USD, use useFormatCurrency for app setting)
+ */
+export function formatCurrency(amount: number, options?: { sign?: boolean }): string {
+  return formatCurrencyWithCode(amount, 'USD', options);
 }
 
 /**
