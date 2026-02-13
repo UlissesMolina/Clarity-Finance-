@@ -96,6 +96,8 @@ function CustomLegend({ payload = [], activeIndex, onItemHover, onItemClick }: C
 }
 
 const PIE_MOBILE_BREAKPOINT = 768;
+const CHART_HEIGHT_DESKTOP = 300;
+const CHART_HEIGHT_MOBILE = 280;
 
 export function LandingAnalyticsChart() {
   const [inView, setInView] = useState(false);
@@ -149,14 +151,14 @@ export function LandingAnalyticsChart() {
         )}
       </p>
       <div className="landing-analytics-chart landing-analytics-chart--pointer">
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={isMobile ? CHART_HEIGHT_MOBILE : CHART_HEIGHT_DESKTOP}>
           <PieChart>
             <Pie
               data={chartData}
               cx="50%"
-              cy="50%"
-              innerRadius={56}
-              outerRadius={96}
+              cy={isMobile ? '45%' : '50%'}
+              innerRadius={isMobile ? 44 : 56}
+              outerRadius={isMobile ? 72 : 96}
               paddingAngle={2}
               dataKey="value"
               nameKey="name"

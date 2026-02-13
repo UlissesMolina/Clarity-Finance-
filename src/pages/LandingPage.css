@@ -494,6 +494,7 @@
 
 .landing-screenshot-wrap--analytics {
   max-width: 640px;
+  overflow: visible;
 }
 
 .landing-screenshot {
