@@ -1,11 +1,23 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { BarChart3, Wallet, PieChart, TrendingUp, Menu, X } from 'lucide-react';
+import { BarChart3, Wallet, PieChart, TrendingUp, Menu, X, MousePointer2, Receipt, Layers, Calendar, Cpu } from 'lucide-react';
 import { ScrollProgress } from '../components/layout/ScrollProgress';
+import { useCountUp } from '../hooks/useCountUp';
 import './LandingPage.css';
 
 const LandingAnalyticsChart = lazy(() =>
   import('../components/landing/LandingAnalyticsChart').then((m) => ({ default: m.LandingAnalyticsChart }))
 );
+
+const BalanceLineAnimation = lazy(() =>
+  import('../components/landing/BalanceLineAnimation').then((m) => ({ default: m.default }))
+);
+
+/** Matches BalanceLineAnimation data: first month vs last month */
+const INTERACTIVE_STATS = {
+  startingBalance: 2840,
+  currentBalance: 5910,
+  growthPercent: 108,
+};
 
 export interface LandingPageProps {
   onViewDemo: () => void;
@@ -32,10 +44,23 @@ const IMG_ANALYTICS = '/assets/newAnalyticsSS.png';
  */
 export default function LandingPage({ onViewDemo }: LandingPageProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [statsInView, setStatsInView] = useState(false);
+  const [interactiveInView, setInteractiveInView] = useState(false);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
-  /* refs: 0=hero, 1=stats, 2=feature-full, 3=analytics, 4=features, 5=tech-strip, 6=footer */
+  const statsSectionRef = useRef<HTMLElement | null>(null);
+  const interactiveSectionRef = useRef<HTMLElement | null>(null);
+  /* refs: 0=hero, 1=stats, 2=interactive, 3=feature-full, 4=analytics, 5=features, 6=tech-strip, 7=footer */
 
   const navRef = useRef<HTMLElement>(null);
+
+  /* Count-up when scrolled into view */
+  const statTransactions = useCountUp(10, { enabled: statsInView, runOnce: true, duration: 1400 });
+  const statCategories = useCountUp(8, { enabled: statsInView, runOnce: true, duration: 1200 });
+  const statMonths = useCountUp(6, { enabled: statsInView, runOnce: true, duration: 1000 });
+  const statClient = useCountUp(100, { enabled: statsInView, runOnce: true, duration: 1600 });
+  const interactiveStart = useCountUp(INTERACTIVE_STATS.startingBalance, { enabled: interactiveInView, runOnce: true, duration: 1200 });
+  const interactiveCurrent = useCountUp(INTERACTIVE_STATS.currentBalance, { enabled: interactiveInView, runOnce: true, duration: 1400 });
+  const interactiveGrowth = useCountUp(INTERACTIVE_STATS.growthPercent, { enabled: interactiveInView, runOnce: true, duration: 1000 });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -50,6 +75,24 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
     );
     sectionRefs.current.forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const statsEl = statsSectionRef.current;
+    const interactiveEl = interactiveSectionRef.current;
+    if (!statsEl && !interactiveEl) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target === statsEl) setStatsInView(entry.isIntersecting);
+          if (entry.target === interactiveEl) setInteractiveInView(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.25, rootMargin: '0px 0px -60px 0px' }
+    );
+    if (statsEl) io.observe(statsEl);
+    if (interactiveEl) io.observe(interactiveEl);
+    return () => io.disconnect();
   }, []);
 
   useEffect(() => {
@@ -119,30 +162,106 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
         </div>
       </header>
 
-      {/* Stats bar (Linear-style social proof) */}
-      <section className="landing-stats" ref={(el) => { if (el) sectionRefs.current[1] = el; }}>
+      {/* Stats bar: big numbers, icons, count-up when in view */}
+      <section
+        className="landing-stats"
+        ref={(el) => {
+          if (el) {
+            sectionRefs.current[1] = el;
+            statsSectionRef.current = el;
+          }
+        }}
+      >
         <div className="stats-inner">
-          <div className="stat">
-            <span className="stat-value">10K+</span>
+          <div className="stat stat--transactions">
+            <Receipt size={22} className="stat-icon" aria-hidden />
+            <span className="stat-value">{statTransactions}K+</span>
             <span className="stat-label">Transactions</span>
           </div>
-          <div className="stat">
-            <span className="stat-value">8</span>
+          <div className="stat stat--categories">
+            <Layers size={22} className="stat-icon" aria-hidden />
+            <span className="stat-value">{statCategories}</span>
             <span className="stat-label">Categories</span>
           </div>
-          <div className="stat">
-            <span className="stat-value">6</span>
+          <div className="stat stat--months">
+            <Calendar size={22} className="stat-icon" aria-hidden />
+            <span className="stat-value">{statMonths}</span>
             <span className="stat-label">Months data</span>
           </div>
-          <div className="stat">
-            <span className="stat-value">100%</span>
+          <div className="stat stat--client">
+            <Cpu size={22} className="stat-icon" aria-hidden />
+            <span className="stat-value">{statClient}%</span>
             <span className="stat-label">Client-side</span>
           </div>
         </div>
       </section>
 
+      {/* Interactive section: balance-over-time line (split layout) */}
+      <section
+        id="interactive"
+        className="landing-interactive"
+        ref={(el) => {
+          if (el) {
+            sectionRefs.current[2] = el;
+            interactiveSectionRef.current = el;
+          }
+        }}
+        aria-label="Balance over time"
+      >
+        <div className="landing-interactive-inner">
+          <div className="landing-interactive-copy">
+            <h2 className="landing-interactive-title">Your financial journey, visualized</h2>
+            <p className="landing-interactive-lead">
+              One clear line—no clutter. See where you started and where you are now.
+            </p>
+            <div className="landing-interactive-stats">
+              <div className="landing-interactive-stat">
+                <span className="landing-interactive-stat-label">Starting balance</span>
+                <span className="landing-interactive-stat-value">
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(interactiveStart)}
+                </span>
+              </div>
+              <div className="landing-interactive-stat">
+                <span className="landing-interactive-stat-label">Current balance</span>
+                <span className="landing-interactive-stat-value landing-interactive-stat-value--accent">
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(interactiveCurrent)}
+                </span>
+              </div>
+              <div className="landing-interactive-stat">
+                <span className="landing-interactive-stat-label">Growth</span>
+                <span
+                  className={`landing-interactive-stat-value landing-interactive-stat-value--growth-pill${interactiveInView ? ' landing-interactive-stat-value--growth-pill-visible' : ''}`}
+                >
+                  <TrendingUp size={16} aria-hidden />
+                  +{interactiveGrowth}%
+                </span>
+              </div>
+            </div>
+            <p className="landing-interactive-insight" role="status">
+              <TrendingUp size={18} className="landing-interactive-insight-icon" aria-hidden />
+              Your balance grew {INTERACTIVE_STATS.growthPercent}% this year — great work!
+            </p>
+          </div>
+          <div className="landing-interactive-chart-wrap">
+            <p className="landing-interactive-hint" aria-hidden>
+              <MousePointer2 size={14} />
+              Interactive — hover to explore
+            </p>
+            <div className="landing-interactive-canvas">
+              <Suspense
+                fallback={
+                  <div className="landing-interactive-fallback" aria-hidden />
+                }
+              >
+                <BalanceLineAnimation />
+              </Suspense>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Full-screen feature: one story (Linear-style) */}
-      <section className="feature-full" ref={(el) => { if (el) sectionRefs.current[2] = el; }}>
+      <section className="feature-full" ref={(el) => { if (el) sectionRefs.current[3] = el; }}>
         <div className="feature-full-inner">
           <div className="feature-full-content">
             <h2 className="feature-full-title">Visual analytics at a glance</h2>
@@ -168,7 +287,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
         </div>
       </section>
 
-      <section className="tech-strip" ref={(el) => { if (el) sectionRefs.current[5] = el; }} aria-label="Built with">
+      <section className="tech-strip" ref={(el) => { if (el) sectionRefs.current[6] = el; }} aria-label="Built with">
         <h2 className="tech-strip-heading">Built with</h2>
         <div className="tech-icons-row">
           {TECH_ICONS.map((item) => (
@@ -181,7 +300,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
       </section>
 
       {/* Analytics section: interactive chart (lazy-loaded) */}
-      <section className="feature-full feature-full--alt" ref={(el) => { if (el) sectionRefs.current[3] = el; }}>
+      <section className="feature-full feature-full--alt" ref={(el) => { if (el) sectionRefs.current[4] = el; }}>
         <div className="feature-full-inner feature-full-inner--reverse">
           <div className="feature-full-visual">
             <div className="landing-screenshot-wrap landing-screenshot-wrap--analytics landing-chart-fallback-wrap">
@@ -210,7 +329,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
         </div>
       </section>
 
-      <section id="features" className="landing-features" ref={(el) => { if (el) sectionRefs.current[4] = el; }}>
+      <section id="features" className="landing-features" ref={(el) => { if (el) sectionRefs.current[5] = el; }}>
         <h2 className="landing-section-title">More features</h2>
         <div className="features-grid">
           <div className="feature-card">
@@ -244,7 +363,7 @@ export default function LandingPage({ onViewDemo }: LandingPageProps) {
         </div>
       </section>
 
-      <footer className="landing-footer" ref={(el) => { if (el) sectionRefs.current[6] = el; }}>
+      <footer className="landing-footer" ref={(el) => { if (el) sectionRefs.current[7] = el; }}>
         <div className="footer-grid">
           <div className="footer-section">
             <h4>Product</h4>
