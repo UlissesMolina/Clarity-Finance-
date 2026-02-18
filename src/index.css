@@ -1,5 +1,5 @@
 /* Premium fonts - display + body */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* Design system - landing & dashboard */
@@ -13,7 +13,7 @@
 
   /* Typography */
   --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
   --font-mono: 'SF Mono', 'Monaco', 'Consolas', monospace;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -47,7 +47,8 @@
   --space-20: 5rem;
   --space-24: 6rem;
 
-  /* Border radius */
+  /* Border radius (single scale – use these everywhere) */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;

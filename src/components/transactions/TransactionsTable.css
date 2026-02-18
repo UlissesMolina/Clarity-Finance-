@@ -164,10 +164,15 @@
 
 .transactions-row-clickable {
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .transactions-row-expanded {
   background: var(--gray-50);
+}
+
+.td-expand svg {
+  transition: transform 0.2s ease;
 }
 
 .transactions-expanded-row td {
@@ -180,12 +185,24 @@
   background: var(--gray-50);
 }
 
+@keyframes transactions-expand-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .transactions-expanded-content {
   padding: 1rem 0.75rem 1rem 2.5rem;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem 1.5rem;
   align-items: flex-start;
+  animation: transactions-expand-in 0.22s ease-out;
 }
 
 .transactions-expanded-section {

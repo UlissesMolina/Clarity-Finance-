@@ -46,7 +46,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== 1. Fixed glass-morphism navigation (frosted blur) ========== */
+/* ========== 1. Fixed navigation (solid, no glass) ========== */
 .landing-nav {
   position: fixed;
   top: 0;
@@ -54,18 +54,15 @@
   right: 0;
   z-index: 1000;
   padding-top: env(safe-area-inset-top, 0);
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
   animation: fadeSlideDown 0.5s ease-out 0.1s both;
 }
 
 .landing-nav.scrolled {
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .nav-inner {
@@ -123,7 +120,7 @@
   border: none;
   background: rgba(0, 0, 0, 0.04);
   color: var(--text);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
@@ -185,9 +182,7 @@
     flex-direction: column;
     gap: 0;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--card-bg);
     border-bottom: 1px solid var(--border);
     display: none;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
@@ -245,7 +240,6 @@
   background:
     radial-gradient(ellipse 80% 50% at 20% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse 60% 40% at 80% 70%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 30% at 50% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 60%),
     linear-gradient(180deg, var(--bg) 0%, var(--card-bg) 50%, #f0fdf4 100%);
   pointer-events: none;
   animation: gradientShift 12s ease-in-out infinite;
@@ -332,7 +326,7 @@
   width: 60px;
   height: 6px;
   background: linear-gradient(90deg, var(--accent), #34d399);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   margin: var(--space-5) auto 0;
 }
 
@@ -921,6 +915,7 @@
   max-width: 640px;
   overflow: visible;
   min-width: 0; /* so ResponsiveContainer gets a defined width in grid/flex */
+  padding: var(--space-5);
 }
 
 .landing-screenshot {
@@ -1036,7 +1031,7 @@
   padding: 0.875rem 2rem;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s, color 0.2s, border-color 0.2s;
   text-decoration: none;
@@ -1142,8 +1137,8 @@
 }
 
 .feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
   border-color: var(--accent);
 }
 
@@ -1157,9 +1152,9 @@
 }
 
 .feature-card:hover .feature-icon-wrap {
-  transform: scale(1.08);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.18));
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  transform: scale(1.02);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.14));
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
 }
 
 .feature-card:hover .feature-icon {
@@ -1169,7 +1164,7 @@
 .feature-icon-wrap {
   width: 52px;
   height: 52px;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.12));
   display: flex;
   align-items: center;

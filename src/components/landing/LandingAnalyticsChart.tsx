@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, Sector } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from 'recharts';
 import { CATEGORY_COLORS } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { MousePointer2, Hand } from 'lucide-react';
@@ -39,12 +39,13 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 }
 
 /** Active segment: slight scale (1.02x) + glow for polish */
-function renderActiveShape(props: { outerRadius?: number; [k: string]: unknown }) {
+function renderActiveShape(props: React.ComponentProps<typeof Sector>) {
   const scale = 1.02;
+  const outerRadius = (props.outerRadius ?? 96) * scale;
   return (
     <Sector
       {...props}
-      outerRadius={((props.outerRadius as number) ?? 96) * scale}
+      outerRadius={outerRadius}
       strokeWidth={2}
       stroke="var(--gray-800)"
       filter="drop-shadow(0 4px 12px rgba(0,0,0,0.12))"
@@ -61,7 +62,7 @@ interface LegendPayloadItem {
 interface CustomLegendProps {
   payload?: LegendPayloadItem[];
   activeIndex: number | null;
-  onItemHover: (index: number | null) => void;
+  onItemHover?: (index: number | null) => void;
   onItemClick?: (index: number) => void;
 }
 
@@ -73,8 +74,8 @@ function CustomLegend({ payload = [], activeIndex, onItemHover, onItemClick }: C
         <li
           key={entry.value}
           className={`landing-chart-legend-item ${activeIndex === index ? 'landing-chart-legend-item--active' : ''}`}
-          onMouseEnter={() => onItemHover(index)}
-          onMouseLeave={() => onItemHover(null)}
+          onMouseEnter={() => onItemHover?.(index)}
+          onMouseLeave={() => onItemHover?.(null)}
           onClick={() => onItemClick?.(index)}
           {...(onItemClick && { role: 'button' as const, tabIndex: 0, onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onItemClick(index); } } })}
         >
@@ -96,7 +97,7 @@ function CustomLegend({ payload = [], activeIndex, onItemHover, onItemClick }: C
 }
 
 const PIE_MOBILE_BREAKPOINT = 768;
-const CHART_HEIGHT_DESKTOP = 300;
+const CHART_HEIGHT_DESKTOP = 450;
 const CHART_HEIGHT_MOBILE = 260;
 
 export function LandingAnalyticsChart() {
@@ -133,9 +134,14 @@ export function LandingAnalyticsChart() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const displayIndex = isMobile ? (activeIndex ?? selectedIndex) : activeIndex;
-  const handleSegmentEnter = (_: unknown, index: number) => setActiveIndex(index);
-  const handleSegmentLeave = () => { if (!isMobile) setActiveIndex(null); };
+  /* Desktop: hover drives highlight + tooltip. Mobile: tap drives highlight + tooltip; tap again deselects. */
+  const displayIndex = isMobile ? selectedIndex : activeIndex;
+  const handleSegmentEnter = (_: unknown, index: number) => {
+    if (!isMobile) setActiveIndex(index);
+  };
+  const handleSegmentLeave = () => {
+    if (!isMobile) setActiveIndex(null);
+  };
   const handleSegmentClick = (_: unknown, index: number) => {
     if (isMobile) setSelectedIndex(selectedIndex === index ? null : index);
   };
@@ -146,34 +152,52 @@ export function LandingAnalyticsChart() {
         {isMobile ? (
           <>
             <Hand size={14} />
-            Tap to explore
+            Tap to highlight and see tooltip, tap again to deselect
           </>
         ) : (
           <>
             <MousePointer2 size={14} />
-            Interactive — hover to explore
+            Hover to highlight and see tooltip
           </>
         )}
       </p>
-      <div className="landing-chart-area">
+      <div className={`landing-chart-area ${!isMobile ? 'landing-chart-area--desktop' : ''}`}>
         {!inView && (
           <div className="landing-chart-skeleton" aria-hidden>
             <div className="landing-chart-skeleton-donut" />
           </div>
         )}
+        {!isMobile && (
+          <div className="landing-chart-legend-desktop">
+            <CustomLegend
+              payload={chartData.map((d) => ({ value: d.name, color: d.color, payload: { value: d.value, percent: d.percent } }))}
+              activeIndex={displayIndex}
+              onItemHover={setActiveIndex}
+            />
+          </div>
+        )}
         <div
           className={`landing-analytics-chart landing-analytics-chart--pointer ${inView ? 'landing-analytics-chart--visible' : ''}`}
-          style={{ height: isMobile ? CHART_HEIGHT_MOBILE : CHART_HEIGHT_DESKTOP }}
+          style={{
+            height: isMobile ? CHART_HEIGHT_MOBILE : CHART_HEIGHT_DESKTOP,
+            width: isMobile ? '100%' : 320,
+            minWidth: isMobile ? undefined : 320,
+            pointerEvents: 'auto',
+          }}
         >
           {shouldRenderChart && (
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+            <ResponsiveContainer
+              width={isMobile ? '100%' : 320}
+              height={isMobile ? '100%' : CHART_HEIGHT_DESKTOP}
+              style={{ touchAction: 'manipulation' }}
+            >
+              <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                 <Pie
                   data={chartData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={isMobile ? 40 : 56}
-                  outerRadius={isMobile ? 64 : 96}
+                  innerRadius={isMobile ? '45%' : '55%'}
+                  outerRadius={isMobile ? '64%' : '76%'}
                   paddingAngle={2}
                   dataKey="value"
                   nameKey="name"
@@ -181,37 +205,29 @@ export function LandingAnalyticsChart() {
                   animationBegin={0}
                   animationDuration={1000}
                   animationEasing="ease-out"
-                  activeIndex={displayIndex}
-                  activeShape={renderActiveShape}
+                  {...({
+                    activeIndex: displayIndex ?? undefined,
+                    activeShape: renderActiveShape,
+                  } as React.ComponentProps<typeof Pie>)}
                   onMouseEnter={handleSegmentEnter}
                   onMouseLeave={handleSegmentLeave}
                   onClick={handleSegmentClick}
+                  onTouchEnd={(arg0: unknown, arg1?: number) => { if (typeof arg1 === 'number') handleSegmentClick(arg0, arg1); }}
                 >
                   {chartData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={entry.color}
                       opacity={displayIndex == null || displayIndex === index ? 1 : 0.4}
-                      style={{ cursor: 'pointer', transition: 'opacity 0.2s ease' }}
+                      style={{
+                        cursor: 'pointer',
+                        transition: 'opacity 0.2s ease',
+                        touchAction: 'manipulation',
+                      }}
                     />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
-                {!isMobile && (
-                  <Legend
-                    layout="vertical"
-                    verticalAlign="middle"
-                    align="right"
-                    content={(props: { payload?: LegendPayloadItem[] }) => (
-                      <CustomLegend
-                        payload={props.payload}
-                        activeIndex={displayIndex}
-                        onItemHover={setActiveIndex}
-                      />
-                    )}
-                    payload={chartData.map((d) => ({ value: d.name, color: d.color, payload: { value: d.value, percent: d.percent } }))}
-                  />
-                )}
               </PieChart>
             </ResponsiveContainer>
           )}

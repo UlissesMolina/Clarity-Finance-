@@ -42,8 +42,31 @@
 .landing-chart-area {
   position: relative;
   min-height: 280px;
-  min-width: 0; /* allow flex/grid parent to give width on desktop */
-  overflow: hidden; /* clip any overflow */
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Desktop: legend above chart so text isn't clipped */
+.landing-chart-area--desktop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  overflow: visible;
+}
+
+.landing-chart-legend-desktop {
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.landing-chart-legend-desktop .landing-chart-legend {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  gap: 0.75rem 1.25rem;
 }
 
 /* Loading skeleton: donut-shaped pulse when chart is not yet in view */
@@ -81,6 +104,12 @@
   transition: opacity 0.4s ease-out;
   position: relative;
   overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.landing-analytics-chart * {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .landing-analytics-chart--visible {
@@ -88,6 +117,24 @@
 }
 
 .landing-analytics-chart--pointer {
+  cursor: pointer;
+}
+
+/* Desktop: ensure chart container has width so ResponsiveContainer doesn't get 0 */
+@media (min-width: 769px) {
+  .landing-chart-area {
+    min-width: 380px;
+  }
+  .landing-analytics-chart {
+    min-width: 380px;
+  }
+}
+
+.recharts-surface,
+.recharts-wrapper,
+.recharts-pie,
+.recharts-pie-sector {
+  touch-action: manipulation !important;
   cursor: pointer;
 }
 
@@ -203,6 +250,28 @@
   padding-top: 1rem;
   border-top: 1px solid var(--gray-100);
   width: 100%;
+}
+
+.landing-chart-legend-mobile .landing-chart-legend-item {
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  margin: -2px calc(-1 * var(--space-3));
+  border-radius: var(--radius-sm);
+  transition: background 0.2s ease;
+}
+
+.landing-chart-legend-mobile .landing-chart-legend-item:active {
+  background: var(--gray-100);
+}
+
+@media (max-width: 768px) {
+  .recharts-surface {
+    touch-action: manipulation;
+  }
+
+  .recharts-wrapper {
+    touch-action: manipulation;
+  }
 }
 
 @media (max-width: 768px) {
